@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    overscroll-behavior: none;
+    font-family: 'Inter', 'Kantumruy Pro', sans-serif;
+  }
+
+  /* Khmer unicode range — automatically switches to Kantumruy Pro */
+  :lang(km),
+  [lang="km"],
+  .khmer {
+    font-family: 'Kantumruy Pro', sans-serif;
+    line-height: 1.8;
+  }
+}
+
+@layer utilities {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
