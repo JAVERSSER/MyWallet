@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { todayStr, getMonthStart, getWeekStart, filterByDate, formatDate } from '../utils/dateUtils';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
 import { useLang } from '../hooks/useLang';
@@ -9,7 +9,20 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
   const [editingBudget, setEditingBudget] = useState(false);
   const [budgetInput, setBudgetInput] = useState(dailyBudget || '');
 
-  const today = todayStr();
+  // Auto-refresh when the calendar day changes (interval + when app comes back to foreground)
+  const [today, setToday] = useState(todayStr());
+  useEffect(() => {
+    const check = () => {
+      const now = todayStr();
+      if (now !== today) setToday(now);
+    };
+    const id = setInterval(check, 60_000);
+    document.addEventListener('visibilitychange', check);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', check);
+    };
+  }, [today]);
   const todayTotal  = expenses.filter((e) => e.date === today).reduce((s, e) => s + e.amount, 0);
   const weekTotal   = filterByDate(expenses, getWeekStart()).reduce((s, e) => s + e.amount, 0);
   const monthTotal  = filterByDate(expenses, getMonthStart()).reduce((s, e) => s + e.amount, 0);

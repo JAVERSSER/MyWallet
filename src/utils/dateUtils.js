@@ -2,6 +2,12 @@ export const toDateStr = (date) => date.toISOString().split('T')[0];
 
 export const todayStr = () => toDateStr(new Date());
 
+export const yesterdayStr = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return toDateStr(d);
+};
+
 export const getWeekStart = () => {
   const d = new Date();
   const day = d.getDay();

@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
-import { filterByDate, getWeekStart, getMonthStart, getYearStart } from '../utils/dateUtils';
+import { filterByDate, getWeekStart, getMonthStart, getYearStart, yesterdayStr } from '../utils/dateUtils';
 import { useLang } from '../hooks/useLang';
 import PieChart from './PieChart';
 
-function getStartDate(period) {
-  if (period === 'week')  return getWeekStart();
-  if (period === 'month') return getMonthStart();
-  if (period === 'year')  return getYearStart();
-  return '1900-01-01';
+function getFiltered(expenses, period) {
+  if (period === 'yesterday') return expenses.filter((e) => e.date === yesterdayStr());
+  if (period === 'week')  return filterByDate(expenses, getWeekStart());
+  if (period === 'month') return filterByDate(expenses, getMonthStart());
+  if (period === 'year')  return filterByDate(expenses, getYearStart());
+  return expenses; // 'all'
 }
 
 export default function Reports({ expenses }) {
@@ -16,13 +17,14 @@ export default function Reports({ expenses }) {
   const [period, setPeriod] = useState('month');
 
   const PERIODS = [
-    { id: 'week',  label: t.week  },
-    { id: 'month', label: t.month },
-    { id: 'year',  label: t.year  },
-    { id: 'all',   label: t.all   },
+    { id: 'yesterday', label: t.yesterday },
+    { id: 'week',      label: t.week      },
+    { id: 'month',     label: t.month     },
+    { id: 'year',      label: t.year      },
+    { id: 'all',       label: t.all       },
   ];
 
-  const filtered = filterByDate(expenses, getStartDate(period));
+  const filtered = getFiltered(expenses, period);
   const total    = filtered.reduce((s, e) => s + e.amount, 0);
 
   const byCategory = EXPENSE_CATEGORIES.map((cat) => {
@@ -40,19 +42,23 @@ export default function Reports({ expenses }) {
     <div className="py-4 space-y-4">
       <p className="font-extrabold text-gray-800 dark:text-white text-xl">{t.reports}</p>
 
-      {/* Period tabs */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl p-1.5 shadow-sm flex gap-1">
-        {PERIODS.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => setPeriod(p.id)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-extrabold transition-all active:scale-95 ${
-              period === p.id ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
+      {/* Period tabs — scroll right to see All */}
+      <div className="relative">
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide bg-white dark:bg-gray-900 rounded-2xl p-1.5 shadow-sm">
+          {PERIODS.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setPeriod(p.id)}
+              className={`shrink-0 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all active:scale-95 whitespace-nowrap ${
+                period === p.id ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+        {/* fade hint on the right edge */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 rounded-r-2xl bg-gradient-to-l from-white dark:from-gray-900 to-transparent" />
       </div>
 
       {/* Total */}
