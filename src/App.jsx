@@ -302,7 +302,7 @@ export default function App() {
 
         {/* Header */}
         <header className="fixed top-0 inset-x-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-          <div className="flex items-center justify-between px-4 h-14 max-w-lg mx-auto">
+          <div className="flex items-center justify-between px-3 sm:px-4 h-14 max-w-lg mx-auto">
             {/* Logo + data button */}
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center shadow-sm shrink-0">
@@ -358,7 +358,7 @@ export default function App() {
         </header>
 
         {/* Content */}
-        <main className="pt-14 pb-28 px-4 max-w-lg mx-auto">
+        <main className="pt-14 pb-32 px-3 sm:px-4 max-w-lg mx-auto">
           {activeTab === 'home' && (
             <Dashboard
               expenses={expenses}
