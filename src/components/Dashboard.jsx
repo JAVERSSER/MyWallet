@@ -45,11 +45,15 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
       {overBudget && (
         <div className="bg-red-500 rounded-3xl p-4 flex items-center gap-3 text-white shadow-lg shadow-red-200 dark:shadow-red-900/50">
           <span className="text-3xl">⚠️</span>
-          <div>
+          <div className="flex-1">
             <p className="font-extrabold">{t.overBudget}</p>
             <p className="text-sm opacity-90">
               {fmt(todayTotal)} {t.spent} · {t.budget} {fmt(dailyBudget)}
             </p>
+          </div>
+          <div className="bg-white/20 rounded-2xl px-3 py-2 text-center shrink-0">
+            <p className="text-[10px] font-bold opacity-80 uppercase tracking-wide">{t.overBy}</p>
+            <p className="text-lg font-extrabold leading-tight">{fmt(todayTotal - dailyBudget)}</p>
           </div>
         </div>
       )}
@@ -87,9 +91,16 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
               <span>🎯</span>
               <span className="text-sm font-bold text-gray-700 dark:text-gray-200">{t.dailyBudget}</span>
             </div>
-            <span className={`text-sm font-extrabold ${overBudget ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`}>
-              {fmt(todayTotal)} / {fmt(dailyBudget)}
-            </span>
+            <div className="text-right">
+              <span className={`text-sm font-extrabold ${overBudget ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}`}>
+                {fmt(todayTotal)} / {fmt(dailyBudget)}
+              </span>
+              <p className={`text-xs font-bold mt-0.5 ${overBudget ? 'text-red-400' : 'text-indigo-400 dark:text-indigo-500'}`}>
+                {overBudget
+                  ? `+${fmt(todayTotal - dailyBudget)} ${t.overBy}`
+                  : `${fmt(dailyBudget - todayTotal)} ${t.remaining}`}
+              </p>
+            </div>
           </div>
           <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
             <div

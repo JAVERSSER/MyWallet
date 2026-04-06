@@ -50,93 +50,129 @@ export function formatAmount(amount, currency) {
 
 export const translations = {
   en: {
+    // summary card
     thisMonth: 'This Month', today: 'Today', thisWeek: 'This Week', records: 'Records',
-    overBudget: 'Over budget today!', spent: 'spent', budget: 'Budget',
+    // budget
+    overBudget: 'Over budget today!', spent: 'spent', budget: 'Budget', overBy: 'over by', remaining: 'remaining',
     setDailyBudget: 'Set a daily budget', budgetWarning: 'Get a warning when you overspend',
-    dailyBudget: 'Daily Budget', save: 'Save', cancel: 'Cancel', editBudget: 'Edit budget',
+    dailyBudget: 'Daily Budget', save: 'Save', cancel: 'Cancel', editBudget: 'Edit Budget',
+    // expense list
     expenses: 'Expenses', noExpenses: 'No expenses yet', tapToAdd: 'Tap + below to add one',
-    newExpense: 'New Expense', editExpense: 'Edit Expense', addNote: 'Add a note... (optional)',
-    addExpense: 'Add Expense', update: 'Update', reports: 'Reports',
-    week: 'Week', month: 'Month', year: 'Year', all: 'All', yesterday: 'Yesterday',
+    newExpense: 'New Expense', editExpense: 'Edit Expense', addNote: 'Add a note… (optional)',
+    addExpense: 'Add Expense', update: 'Update',
+    // reports
+    reports: 'Reports', yesterday: 'Yesterday', week: 'Week', month: 'Month', year: 'Year', all: 'All',
     transactions: 'transactions', whereDidItGo: 'Where did it go?',
     byCategory: 'By Category', noData: 'No data for this period', times: 'times',
+    // nav & categories
     home: 'Home', food: 'Food', drink: 'Drink', fruit: 'Fruit',
     transport: 'Transport', football: 'Football', other: 'Other', recordsLabel: 'records',
+    // settings
     language: 'Language', currency: 'Currency',
   },
   km: {
+    // summary card
     thisMonth: 'ខែនេះ', today: 'ថ្ងៃនេះ', thisWeek: 'សប្តាហ៍នេះ', records: 'កំណត់ត្រា',
-    overBudget: 'លើសថវិការថ្ងៃនេះ!', spent: 'បានចំណាយ', budget: 'ថវិកា',
-    setDailyBudget: 'កំណត់ថវិការប្រចាំថ្ងៃ', budgetWarning: 'ទទួលការព្រមានពេលចំណាយច្រើន',
+    // budget
+    overBudget: 'លើសថវិការថ្ងៃនេះ!', spent: 'បានចំណាយ', budget: 'ថវិកា', overBy: 'លើស', remaining: 'នៅសល់',
+    setDailyBudget: 'កំណត់ថវិការប្រចាំថ្ងៃ', budgetWarning: 'ទទួលការព្រមាន នៅពេលចំណាយលើស',
     dailyBudget: 'ថវិការប្រចាំថ្ងៃ', save: 'រក្សាទុក', cancel: 'បោះបង់', editBudget: 'កែថវិកា',
-    expenses: 'ការចំណាយ', noExpenses: 'មិនទាន់មានការចំណាយ', tapToAdd: 'ចុច + ដើម្បីបន្ថែម',
-    newExpense: 'ការចំណាយថ្មី', editExpense: 'កែការចំណាយ', addNote: 'បន្ថែមកំណត់ចំណាំ...',
-    addExpense: 'បន្ថែមការចំណាយ', update: 'កែប្រែ', reports: 'របាយការណ៍',
-    week: 'សប្តាហ៍', month: 'ខែ', year: 'ឆ្នាំ', all: 'ទាំងអស់', yesterday: 'ម្សិលមិញ',
+    // expense list
+    expenses: 'ការចំណាយ', noExpenses: 'មិនទាន់មានការចំណាយ', tapToAdd: 'ចុច + ខាងក្រោមដើម្បីបន្ថែម',
+    newExpense: 'ការចំណាយថ្មី', editExpense: 'កែការចំណាយ', addNote: 'បន្ថែមកំណត់ចំណាំ… (ស្រេចចិត្ត)',
+    addExpense: 'បន្ថែមការចំណាយ', update: 'កែប្រែ',
+    // reports
+    reports: 'របាយការណ៍', yesterday: 'ម្សិលមិញ', week: 'សប្តាហ៍', month: 'ខែ', year: 'ឆ្នាំ', all: 'ទាំងអស់',
     transactions: 'ប្រតិបត្តិការ', whereDidItGo: 'ចំណាយទៅណា?',
-    byCategory: 'តាមប្រភេទ', noData: 'គ្មានទិន្នន័យ', times: 'ដង',
+    byCategory: 'តាមប្រភេទ', noData: 'គ្មានទិន្នន័យសម្រាប់រយៈពេលនេះ', times: 'ដង',
+    // nav & categories
     home: 'ទំព័រដើម', food: 'អាហារ', drink: 'ភេសជ្ជៈ', fruit: 'ផ្លែឈើ',
     transport: 'ដឹកជញ្ជូន', football: 'បាល់ទាត់', other: 'ផ្សេងៗ', recordsLabel: 'កំណត់ត្រា',
+    // settings
     language: 'ភាសា', currency: 'រូបិយប័ណ្ណ',
   },
   hi: {
-    thisMonth: 'इस महीने', today: 'आज', thisWeek: 'इस सप्ताह', records: 'रिकॉर्ड',
-    overBudget: 'बजट से अधिक!', spent: 'खर्च', budget: 'बजट',
-    setDailyBudget: 'दैनिक बजट सेट करें', budgetWarning: 'अधिक खर्च पर चेतावनी पाएं',
-    dailyBudget: 'दैनिक बजट', save: 'सहेजें', cancel: 'रद्द', editBudget: 'बजट बदलें',
-    expenses: 'खर्चे', noExpenses: 'अभी कोई खर्च नहीं', tapToAdd: '+ दबाएं',
-    newExpense: 'नया खर्च', editExpense: 'खर्च बदलें', addNote: 'नोट जोड़ें... (वैकल्पिक)',
-    addExpense: 'खर्च जोड़ें', update: 'अपडेट', reports: 'रिपोर्ट',
-    week: 'सप्ताह', month: 'महीना', year: 'साल', all: 'सभी', yesterday: 'कल',
+    // summary card
+    thisMonth: 'इस महीने', today: 'आज', thisWeek: 'इस हफ़्ते', records: 'रिकॉर्ड',
+    // budget
+    overBudget: 'आज बजट पार हो गया!', spent: 'खर्च हुआ', budget: 'बजट', overBy: 'अधिक', remaining: 'बचा हुआ',
+    setDailyBudget: 'दैनिक बजट तय करें', budgetWarning: 'ज़्यादा खर्च पर अलर्ट पाएं',
+    dailyBudget: 'दैनिक बजट', save: 'सेव करें', cancel: 'रद्द करें', editBudget: 'बजट बदलें',
+    // expense list
+    expenses: 'खर्चे', noExpenses: 'अभी कोई खर्च नहीं', tapToAdd: 'नीचे + दबाकर जोड़ें',
+    newExpense: 'नया खर्च', editExpense: 'खर्च संपादित करें', addNote: 'नोट जोड़ें… (वैकल्पिक)',
+    addExpense: 'खर्च जोड़ें', update: 'अपडेट करें',
+    // reports
+    reports: 'रिपोर्ट', yesterday: 'बीता कल', week: 'सप्ताह', month: 'महीना', year: 'साल', all: 'सभी',
     transactions: 'लेनदेन', whereDidItGo: 'पैसे कहाँ गए?',
-    byCategory: 'श्रेणी के अनुसार', noData: 'कोई डेटा नहीं', times: 'बार',
-    home: 'होम', food: 'खाना', drink: 'पेय', fruit: 'फल',
+    byCategory: 'श्रेणी के अनुसार', noData: 'इस अवधि का कोई डेटा नहीं', times: 'बार',
+    // nav & categories
+    home: 'होम', food: 'खाना', drink: 'पेय पदार्थ', fruit: 'फल',
     transport: 'परिवहन', football: 'फुटबॉल', other: 'अन्य', recordsLabel: 'रिकॉर्ड',
+    // settings
     language: 'भाषा', currency: 'मुद्रा',
   },
   zh: {
+    // summary card
     thisMonth: '本月', today: '今天', thisWeek: '本周', records: '记录',
-    overBudget: '超出预算！', spent: '已花费', budget: '预算',
-    setDailyBudget: '设置每日预算', budgetWarning: '超支时获得提醒',
+    // budget
+    overBudget: '今日超出预算！', spent: '已花费', budget: '预算', overBy: '超出', remaining: '剩余',
+    setDailyBudget: '设置每日预算', budgetWarning: '超支时收到提醒',
     dailyBudget: '每日预算', save: '保存', cancel: '取消', editBudget: '编辑预算',
-    expenses: '支出', noExpenses: '暂无支出', tapToAdd: '点击+添加',
-    newExpense: '新支出', editExpense: '编辑支出', addNote: '添加备注…（可选）',
-    addExpense: '添加支出', update: '更新', reports: '报告',
-    week: '周', month: '月', year: '年', all: '全部', yesterday: '昨天',
-    transactions: '笔交易', whereDidItGo: '花在哪了？',
-    byCategory: '按类别', noData: '本期无数据', times: '次',
-    home: '主页', food: '食物', drink: '饮料', fruit: '水果',
+    // expense list
+    expenses: '支出记录', noExpenses: '暂无支出', tapToAdd: '点击下方 + 添加',
+    newExpense: '新增支出', editExpense: '编辑支出', addNote: '添加备注…（可选）',
+    addExpense: '添加支出', update: '更新',
+    // reports
+    reports: '报表', yesterday: '昨天', week: '本周', month: '本月', year: '本年', all: '全部',
+    transactions: '笔交易', whereDidItGo: '钱花在哪了？',
+    byCategory: '按类别', noData: '该时段暂无数据', times: '次',
+    // nav & categories
+    home: '主页', food: '餐饮', drink: '饮料', fruit: '水果',
     transport: '交通', football: '足球', other: '其他', recordsLabel: '条记录',
+    // settings
     language: '语言', currency: '货币',
   },
   fr: {
-    thisMonth: 'Ce mois-ci', today: "Aujourd'hui", thisWeek: 'Cette semaine', records: 'Enreg.',
-    overBudget: 'Budget dépassé !', spent: 'dépensé', budget: 'Budget',
-    setDailyBudget: 'Définir un budget quotidien', budgetWarning: 'Alerte si dépassement',
-    dailyBudget: 'Budget quotidien', save: 'Sauvegarder', cancel: 'Annuler', editBudget: 'Modifier',
-    expenses: 'Dépenses', noExpenses: 'Aucune dépense', tapToAdd: 'Appuyez sur + pour ajouter',
-    newExpense: 'Nouvelle dépense', editExpense: 'Modifier', addNote: 'Ajouter une note… (optionnel)',
-    addExpense: 'Ajouter', update: 'Mettre à jour', reports: 'Rapports',
-    week: 'Semaine', month: 'Mois', year: 'Année', all: 'Tout', yesterday: 'Hier',
-    transactions: 'transactions', whereDidItGo: "Où va l'argent ?",
-    byCategory: 'Par catégorie', noData: 'Aucune donnée', times: 'fois',
+    // summary card
+    thisMonth: 'Ce mois-ci', today: "Aujourd'hui", thisWeek: 'Cette semaine', records: 'Entrées',
+    // budget
+    overBudget: 'Budget dépassé aujourd\'hui !', spent: 'dépensé', budget: 'Budget', overBy: 'dépassé de', remaining: 'restant',
+    setDailyBudget: 'Définir un budget quotidien', budgetWarning: 'Alerte en cas de dépassement',
+    dailyBudget: 'Budget quotidien', save: 'Enregistrer', cancel: 'Annuler', editBudget: 'Modifier le budget',
+    // expense list
+    expenses: 'Dépenses', noExpenses: 'Aucune dépense pour l\'instant', tapToAdd: 'Appuyez sur + ci-dessous',
+    newExpense: 'Nouvelle dépense', editExpense: 'Modifier la dépense', addNote: 'Ajouter une note… (optionnel)',
+    addExpense: 'Ajouter la dépense', update: 'Mettre à jour',
+    // reports
+    reports: 'Rapports', yesterday: 'Hier', week: 'Semaine', month: 'Mois', year: 'Année', all: 'Tout',
+    transactions: 'transactions', whereDidItGo: 'Où va l\'argent ?',
+    byCategory: 'Par catégorie', noData: 'Aucune donnée pour cette période', times: 'fois',
+    // nav & categories
     home: 'Accueil', food: 'Alimentation', drink: 'Boisson', fruit: 'Fruits',
-    transport: 'Transport', football: 'Football', other: 'Autre', recordsLabel: 'enreg.',
+    transport: 'Transport', football: 'Football', other: 'Autre', recordsLabel: 'entrées',
+    // settings
     language: 'Langue', currency: 'Devise',
   },
   vi: {
+    // summary card
     thisMonth: 'Tháng này', today: 'Hôm nay', thisWeek: 'Tuần này', records: 'Giao dịch',
-    overBudget: 'Vượt ngân sách!', spent: 'đã chi', budget: 'Ngân sách',
-    setDailyBudget: 'Đặt ngân sách hàng ngày', budgetWarning: 'Nhận cảnh báo khi vượt',
-    dailyBudget: 'Ngân sách ngày', save: 'Lưu', cancel: 'Hủy', editBudget: 'Sửa ngân sách',
-    expenses: 'Chi tiêu', noExpenses: 'Chưa có chi tiêu', tapToAdd: 'Nhấn + để thêm',
-    newExpense: 'Chi tiêu mới', editExpense: 'Sửa chi tiêu', addNote: 'Thêm ghi chú… (tùy chọn)',
-    addExpense: 'Thêm chi tiêu', update: 'Cập nhật', reports: 'Báo cáo',
-    week: 'Tuần', month: 'Tháng', year: 'Năm', all: 'Tất cả', yesterday: 'Hôm qua',
+    // budget
+    overBudget: 'Vượt ngân sách hôm nay!', spent: 'đã chi', budget: 'Ngân sách', overBy: 'vượt', remaining: 'còn lại',
+    setDailyBudget: 'Đặt ngân sách hàng ngày', budgetWarning: 'Cảnh báo khi chi tiêu vượt mức',
+    dailyBudget: 'Ngân sách ngày', save: 'Lưu lại', cancel: 'Hủy bỏ', editBudget: 'Sửa ngân sách',
+    // expense list
+    expenses: 'Chi tiêu', noExpenses: 'Chưa có khoản chi nào', tapToAdd: 'Nhấn + bên dưới để thêm',
+    newExpense: 'Thêm chi tiêu', editExpense: 'Sửa chi tiêu', addNote: 'Thêm ghi chú… (tùy chọn)',
+    addExpense: 'Thêm chi tiêu', update: 'Cập nhật',
+    // reports
+    reports: 'Báo cáo', yesterday: 'Hôm qua', week: 'Tuần', month: 'Tháng', year: 'Năm', all: 'Tất cả',
     transactions: 'giao dịch', whereDidItGo: 'Tiền đi đâu?',
-    byCategory: 'Theo danh mục', noData: 'Không có dữ liệu', times: 'lần',
-    home: 'Trang chủ', food: 'Thức ăn', drink: 'Đồ uống', fruit: 'Trái cây',
+    byCategory: 'Theo danh mục', noData: 'Không có dữ liệu cho kỳ này', times: 'lần',
+    // nav & categories
+    home: 'Trang chủ', food: 'Ăn uống', drink: 'Đồ uống', fruit: 'Trái cây',
     transport: 'Di chuyển', football: 'Bóng đá', other: 'Khác', recordsLabel: 'giao dịch',
+    // settings
     language: 'Ngôn ngữ', currency: 'Tiền tệ',
   },
 };

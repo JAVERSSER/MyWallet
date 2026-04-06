@@ -1,22 +1,24 @@
 import { useState } from 'react';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
-import { filterByDate, getWeekStart, getMonthStart, getYearStart, yesterdayStr } from '../utils/dateUtils';
+import { filterByDate, getWeekStart, getMonthStart, getYearStart, yesterdayStr, todayStr } from '../utils/dateUtils';
 import { useLang } from '../hooks/useLang';
 import PieChart from './PieChart';
 
 function getFiltered(expenses, period) {
+  if (period === 'today')     return expenses.filter((e) => e.date === todayStr());
   if (period === 'yesterday') return expenses.filter((e) => e.date === yesterdayStr());
-  if (period === 'week')  return filterByDate(expenses, getWeekStart());
-  if (period === 'month') return filterByDate(expenses, getMonthStart());
-  if (period === 'year')  return filterByDate(expenses, getYearStart());
+  if (period === 'week')      return filterByDate(expenses, getWeekStart());
+  if (period === 'month')     return filterByDate(expenses, getMonthStart());
+  if (period === 'year')      return filterByDate(expenses, getYearStart());
   return expenses; // 'all'
 }
 
 export default function Reports({ expenses }) {
   const { t, fmt } = useLang();
-  const [period, setPeriod] = useState('month');
+  const [period, setPeriod] = useState('today');
 
   const PERIODS = [
+    { id: 'today',     label: t.today     },
     { id: 'yesterday', label: t.yesterday },
     { id: 'week',      label: t.week      },
     { id: 'month',     label: t.month     },
@@ -42,14 +44,14 @@ export default function Reports({ expenses }) {
     <div className="py-4 space-y-4">
       <p className="font-extrabold text-gray-800 dark:text-white text-xl">{t.reports}</p>
 
-      {/* Period tabs — scroll right to see All */}
+      {/* Period tabs — Today/Yesterday/Week/Month visible, scroll right for Year/All */}
       <div className="relative">
         <div className="flex gap-1 overflow-x-auto scrollbar-hide bg-white dark:bg-gray-900 rounded-2xl p-1.5 shadow-sm">
           {PERIODS.map((p) => (
             <button
               key={p.id}
               onClick={() => setPeriod(p.id)}
-              className={`shrink-0 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all active:scale-95 whitespace-nowrap ${
+              className={`shrink-0 w-[calc(25%-3px)] py-2.5 rounded-xl text-[11px] font-extrabold transition-all active:scale-95 leading-tight text-center whitespace-nowrap ${
                 period === p.id ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-400 dark:text-gray-500'
               }`}
             >
@@ -57,8 +59,8 @@ export default function Reports({ expenses }) {
             </button>
           ))}
         </div>
-        {/* fade hint on the right edge */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 rounded-r-2xl bg-gradient-to-l from-white dark:from-gray-900 to-transparent" />
+        {/* right-edge fade hints that Year & All are off-screen */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 rounded-r-2xl bg-gradient-to-l from-white dark:from-gray-900 to-transparent" />
       </div>
 
       {/* Total */}
