@@ -12,8 +12,9 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [amountStr, setAmountStr] = useState(
     initialData ? String(Math.round(initialData.amount)) : ''
   );
-  const [note, setNote]   = useState(initialData?.note || '');
-  const [date, setDate]   = useState(initialData?.date || todayStr());
+  const [note, setNote]     = useState(initialData?.note || '');
+  const [date, setDate]     = useState(initialData?.date || todayStr());
+  const [noteActive, setNoteActive] = useState(false);
 
   const handleKey = (key) => {
     if (key === '⌫') {
@@ -105,42 +106,76 @@ export default function AddModal({ onSave, onClose, initialData }) {
 
       {/* Bottom */}
       <div className="px-4 pt-2 pb-[env(safe-area-inset-bottom,16px)] space-y-2 shrink-0">
-        <input
-          type="text"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder={t.addNote}
-          className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
-        />
-
-        {/* Numpad */}
-        <div className="grid grid-cols-3 gap-1.5">
-          {KEYS.map((key) => (
+        {/* Note input — focuses system keyboard, hides numpad */}
+        <div className="relative">
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            onFocus={() => setNoteActive(true)}
+            onBlur={() => setNoteActive(false)}
+            placeholder={t.addNote}
+            className="w-full text-left bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
+          />
+          {noteActive && note.length > 0 && (
             <button
-              key={key}
-              onClick={() => handleKey(key)}
-              className={`py-3 rounded-xl text-lg font-bold transition-all active:scale-95 select-none ${
-                key === '⌫'
-                  ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
-                  : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
-              }`}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setNote('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white dark:text-gray-200 text-xs font-bold"
             >
-              {key}
+              ✕
             </button>
-          ))}
+          )}
         </div>
 
-        <button
-          onClick={handleSave}
-          disabled={!canSave}
-          className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
-            canSave
-              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
-              : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
-          }`}
-        >
-          {isEdit ? t.update : t.addExpense}
-        </button>
+        {/* Numpad — hidden while note keyboard is open */}
+        {!noteActive && (
+          <>
+            <div className="grid grid-cols-3 gap-1.5">
+              {KEYS.map((key) => (
+                <button
+                  key={key}
+                  onClick={() => handleKey(key)}
+                  className={`py-3 rounded-xl text-lg font-bold transition-all active:scale-95 select-none ${
+                    key === '⌫'
+                      ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
+                      : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
+                  }`}
+                >
+                  {key}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={handleSave}
+              disabled={!canSave}
+              className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
+                canSave
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
+                  : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
+              }`}
+            >
+              {isEdit ? t.update : t.addExpense}
+            </button>
+          </>
+        )}
+
+        {/* Save button visible while typing note */}
+        {noteActive && (
+          <button
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => { setNoteActive(false); handleSave(); }}
+            disabled={!canSave}
+            className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
+              canSave
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
+            }`}
+          >
+            {isEdit ? t.update : t.addExpense}
+          </button>
+        )}
       </div>
     </div>
   );
