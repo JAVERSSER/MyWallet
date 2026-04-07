@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
 import { todayStr } from '../utils/dateUtils';
 import { useLang } from '../hooks/useLang';
@@ -8,12 +8,26 @@ const KEYS = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '00', '0', '⌫'];
 export default function AddModal({ onSave, onClose, initialData }) {
   const { t, currency } = useLang();
   const isEdit = !!initialData;
-  const [category, setCategory]   = useState(initialData?.category || 'Food');
-  const [amountStr, setAmountStr] = useState(
-    initialData ? String(Math.round(initialData.amount)) : ''
-  );
-  const [note, setNote]   = useState(initialData?.note || '');
-  const [date, setDate]   = useState(initialData?.date || todayStr());
+  const [category, setCategory]     = useState(initialData?.category || 'Food');
+  const [amountStr, setAmountStr]   = useState(initialData ? String(Math.round(initialData.amount)) : '');
+  const [note, setNote]             = useState(initialData?.note || '');
+  const [date, setDate]             = useState(initialData?.date || todayStr());
+  const [kbHeight, setKbHeight]     = useState(0); // keyboard height in px
+
+  // Track keyboard height via visualViewport
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => {
+      const kb = window.innerHeight - vv.height;
+      setKbHeight(Math.max(0, kb));
+    };
+    update();
+    vv.addEventListener('resize', update);
+    return () => vv.removeEventListener('resize', update);
+  }, []);
+
+  const keyboardOpen = kbHeight > 50;
 
   const handleKey = (key) => {
     if (key === '⌫') {
@@ -46,7 +60,10 @@ export default function AddModal({ onSave, onClose, initialData }) {
     : currency.after ? `0 ${currency.symbol}` : `${currency.symbol}0`;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-950">
+    <div
+      className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-950"
+      style={{ paddingBottom: kbHeight }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 shrink-0">
         <button
@@ -62,7 +79,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Category row */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-100 dark:border-gray-800">
+      <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-100 dark:border-gray-800 scrollbar-hide">
         {EXPENSE_CATEGORIES.map((cat) => (
           <button
             key={cat}
@@ -78,57 +95,76 @@ export default function AddModal({ onSave, onClose, initialData }) {
         ))}
       </div>
 
-      {/* Amount display */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5">
-        <div
-          className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl"
-          style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
-        >
-          {CATEGORY_ICONS[category]}
-        </div>
+      {/* Amount — hidden when keyboard open */}
+      {!keyboardOpen && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5 min-h-0">
+          <div
+            className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl"
+            style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
+          >
+            {CATEGORY_ICONS[category]}
+          </div>
 
-        <p
-          className={`text-5xl font-extrabold tracking-tight ${
+          <p className={`text-5xl font-extrabold tracking-tight ${
             amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
-          }`}
-        >
-          {displayAmount}
-        </p>
+          }`}>
+            {displayAmount}
+          </p>
 
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="text-sm text-gray-400 dark:text-gray-500 bg-transparent border-none focus:outline-none text-center"
-        />
-      </div>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="text-sm text-gray-400 dark:text-gray-500 bg-transparent border-none focus:outline-none text-center"
+          />
+        </div>
+      )}
+
+      {/* Compact amount when keyboard open */}
+      {keyboardOpen && (
+        <div className="flex items-center justify-center gap-3 px-5 py-3 shrink-0">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-2xl shrink-0"
+            style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
+          >
+            {CATEGORY_ICONS[category]}
+          </div>
+          <p className={`text-2xl font-extrabold tracking-tight ${
+            amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-300 dark:text-gray-700'
+          }`}>
+            {displayAmount}
+          </p>
+        </div>
+      )}
 
       {/* Bottom */}
-      <div className="px-5 pb-8 pt-2 space-y-3 shrink-0">
+      <div className="px-5 pt-2 pb-4 space-y-3 shrink-0">
         <input
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder={t.addNote}
+          style={{ fontSize: '16px' }}
           className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
         />
 
-        {/* Numpad */}
-        <div className="grid grid-cols-3 gap-2">
-          {KEYS.map((key) => (
-            <button
-              key={key}
-              onClick={() => handleKey(key)}
-              className={`py-4 rounded-2xl text-xl font-bold transition-all active:scale-95 select-none ${
-                key === '⌫'
-                  ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500 text-lg'
-                  : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
-              }`}
-            >
-              {key}
-            </button>
-          ))}
-        </div>
+        {!keyboardOpen && (
+          <div className="grid grid-cols-3 gap-2">
+            {KEYS.map((key) => (
+              <button
+                key={key}
+                onClick={() => handleKey(key)}
+                className={`py-4 rounded-2xl text-xl font-bold transition-all active:scale-95 select-none ${
+                  key === '⌫'
+                    ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500 text-lg'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
+                }`}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+        )}
 
         <button
           onClick={handleSave}
