@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
 import { todayStr } from '../utils/dateUtils';
 import { useLang } from '../hooks/useLang';
@@ -8,12 +8,30 @@ const KEYS = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '00', '0', '⌫'];
 export default function AddModal({ onSave, onClose, initialData }) {
   const { t, currency } = useLang();
   const isEdit = !!initialData;
-  const [category, setCategory]   = useState(initialData?.category || 'Food');
-  const [amountStr, setAmountStr] = useState(
-    initialData ? String(Math.round(initialData.amount)) : ''
-  );
-  const [note, setNote] = useState(initialData?.note || '');
+  const [category, setCategory]     = useState(initialData?.category || 'Food');
+  const [amountStr, setAmountStr]   = useState(initialData ? String(Math.round(initialData.amount)) : '');
+  const [note, setNote]             = useState(initialData?.note || '');
+  const [noteActive, setNoteActive] = useState(false);
+  const modalRef = useRef(null);
   const date = initialData?.date || todayStr();
+
+  // Resize to visual viewport so keyboard never hides the save button
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => {
+      if (!modalRef.current) return;
+      modalRef.current.style.height = `${vv.height}px`;
+      modalRef.current.style.top    = `${vv.offsetTop}px`;
+    };
+    update();
+    vv.addEventListener('resize', update);
+    vv.addEventListener('scroll', update);
+    return () => {
+      vv.removeEventListener('resize', update);
+      vv.removeEventListener('scroll', update);
+    };
+  }, []);
 
   const handleKey = (key) => {
     if (key === '⌫') {
@@ -38,6 +56,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
   };
 
   const catLabel = (cat) => t[cat.toLowerCase()] || cat;
+  const color = CATEGORY_COLORS[category];
 
   const displayAmount = amountStr
     ? currency.after
@@ -46,89 +65,135 @@ export default function AddModal({ onSave, onClose, initialData }) {
     : currency.after ? `0 ${currency.symbol}` : `${currency.symbol}0`;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-950">
+    <div
+      ref={modalRef}
+      className="fixed inset-x-0 z-50 flex flex-col bg-white dark:bg-gray-950 overflow-hidden"
+      style={{ top: 0, height: '100dvh' }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 shrink-0">
+      <div className="flex items-center justify-between px-5 py-3 shrink-0">
         <button
           onClick={onClose}
-          className="text-sm font-semibold text-gray-400 dark:text-gray-500 active:text-gray-700 dark:active:text-gray-300"
+          className="text-sm font-semibold text-gray-400 dark:text-gray-500 active:opacity-50 transition-opacity"
         >
           {t.cancel}
         </button>
-        <p className="font-extrabold text-gray-900 dark:text-white">
+        <p className="font-extrabold text-gray-900 dark:text-white text-sm tracking-tight">
           {isEdit ? t.editExpense : t.newExpense}
         </p>
         <div className="w-14" />
       </div>
 
-      {/* Category row */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-100 dark:border-gray-800 scrollbar-hide">
+      {/* Category pills */}
+      <div className="flex gap-2 overflow-x-auto px-5 pb-3 shrink-0 scrollbar-hide">
         {EXPENSE_CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setCategory(cat)}
-            className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
-              category === cat ? 'text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+            className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 ${
+              category === cat ? 'text-white shadow-sm' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
             }`}
-            style={category === cat ? { backgroundColor: CATEGORY_COLORS[cat] } : {}}
+            style={category === cat ? { backgroundColor: color } : {}}
           >
-            <span className="text-base">{CATEGORY_ICONS[cat]}</span>
+            <span>{CATEGORY_ICONS[cat]}</span>
             <span>{catLabel(cat)}</span>
           </button>
         ))}
       </div>
 
-      {/* Amount display */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5">
+      <div className="h-px bg-gray-100 dark:bg-gray-800 shrink-0" />
+
+      {/* Amount area */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5 min-h-0">
+        {/* Category icon */}
         <div
-          className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl"
-          style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
+          className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-sm"
+          style={{ backgroundColor: color + '20' }}
         >
           {CATEGORY_ICONS[category]}
         </div>
 
-        <p className={`text-5xl font-extrabold tracking-tight ${
+        {/* Amount */}
+        <p className={`text-5xl font-extrabold tracking-tight transition-colors ${
           amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
         }`}>
           {displayAmount}
         </p>
+
+        {/* Category label */}
+        <span
+          className="text-xs font-bold px-3 py-1 rounded-full"
+          style={{ backgroundColor: color + '15', color }}
+        >
+          {catLabel(category)}
+        </span>
       </div>
 
-      {/* Bottom */}
-      <div className="px-5 pb-8 pt-2 space-y-3 shrink-0">
-        <input
-          type="text"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder={t.addNote}
-          style={{ fontSize: '16px' }}
-          className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
-        />
+      {/* Bottom section */}
+      <div className="px-4 pt-2 pb-5 flex flex-col gap-2 shrink-0">
 
-        <div className="grid grid-cols-3 gap-2">
-          {KEYS.map((key) => (
+        {/* Note input */}
+        <div className="relative">
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            onFocus={() => setNoteActive(true)}
+            onBlur={() => setNoteActive(false)}
+            placeholder={t.addNote}
+            style={{ fontSize: '16px' }}
+            className={`w-full text-center rounded-2xl px-4 py-3 font-medium focus:outline-none transition-all placeholder-gray-300 dark:placeholder-gray-700 ${
+              noteActive
+                ? 'bg-white dark:bg-gray-900 ring-2 text-gray-800 dark:text-white shadow-md'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300'
+            }`}
+          />
+          {note.length > 0 && (
             <button
-              key={key}
-              onClick={() => handleKey(key)}
-              className={`py-4 rounded-2xl text-xl font-bold transition-all active:scale-95 select-none ${
-                key === '⌫'
-                  ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500 text-lg'
-                  : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
-              }`}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setNote('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-bold"
             >
-              {key}
+              ✕
             </button>
-          ))}
+          )}
         </div>
 
+        {/* Numpad — hides when system keyboard is open */}
+        {!noteActive && (
+          <div className="grid grid-cols-3 gap-2">
+            {KEYS.map((key) => (
+              <button
+                key={key}
+                onClick={() => handleKey(key)}
+                className={`py-3.5 rounded-2xl text-xl font-bold transition-all active:scale-95 select-none ${
+                  key === '⌫'
+                    ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
+                }`}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Save button — fades out while typing note */}
         <button
           onClick={handleSave}
-          disabled={!canSave}
-          className={`w-full py-4 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
+          disabled={!canSave || noteActive}
+          className={`w-full py-3.5 rounded-2xl font-extrabold text-base active:scale-95 ${
             canSave
-              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
+              ? 'text-white shadow-lg'
               : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
           }`}
+          style={{
+            ...(canSave ? { backgroundColor: color, boxShadow: `0 8px 24px ${color}40` } : {}),
+            opacity: noteActive ? 0 : 1,
+            transform: noteActive ? 'scale(0.96)' : 'scale(1)',
+            transition: 'opacity 0.2s ease, transform 0.2s ease',
+            pointerEvents: noteActive ? 'none' : 'auto',
+          }}
         >
           {isEdit ? t.update : t.addExpense}
         </button>
