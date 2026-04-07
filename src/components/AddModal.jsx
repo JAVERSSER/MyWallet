@@ -15,22 +15,17 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const modalRef = useRef(null);
   const date = initialData?.date || todayStr();
 
-  // Resize to visual viewport — makes save button follow keyboard up on iPhone
+  // Resize height to visual viewport so save button follows keyboard up on iPhone
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
     const update = () => {
       if (!modalRef.current) return;
       modalRef.current.style.height = `${vv.height}px`;
-      modalRef.current.style.top    = `${vv.offsetTop}px`;
     };
     update();
     vv.addEventListener('resize', update);
-    vv.addEventListener('scroll', update);
-    return () => {
-      vv.removeEventListener('resize', update);
-      vv.removeEventListener('scroll', update);
-    };
+    return () => vv.removeEventListener('resize', update);
   }, []);
 
   const handleKey = (key) => {
