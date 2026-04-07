@@ -13,25 +13,28 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [note, setNote]           = useState(initialData?.note || '');
   const [date, setDate]           = useState(initialData?.date || todayStr());
   const [noteActive, setNoteActive] = useState(false);
-  const bottomRef = useRef(null);
+  const modalRef = useRef(null);
 
-  // Slide the bottom section up by the keyboard height so nothing is hidden
+  // Resize the modal to match the visual viewport so keyboard never covers content
   useEffect(() => {
-    if (!noteActive) return;
     const vv = window.visualViewport;
     if (!vv) return;
+
     const update = () => {
-      if (!bottomRef.current) return;
-      const kb = Math.max(0, window.innerHeight - vv.height);
-      bottomRef.current.style.transform = `translateY(-${kb}px)`;
+      if (!modalRef.current) return;
+      modalRef.current.style.height = `${vv.height}px`;
+      modalRef.current.style.top    = `${vv.offsetTop}px`;
     };
+
     update();
     vv.addEventListener('resize', update);
+    vv.addEventListener('scroll', update);
+
     return () => {
       vv.removeEventListener('resize', update);
-      if (bottomRef.current) bottomRef.current.style.transform = '';
+      vv.removeEventListener('scroll', update);
     };
-  }, [noteActive]);
+  }, []);
 
   const handleKey = (key) => {
     if (key === '⌫') {
@@ -64,7 +67,11 @@ export default function AddModal({ onSave, onClose, initialData }) {
     : currency.after ? `0 ${currency.symbol}` : `${currency.symbol}0`;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-950 overflow-hidden">
+    <div
+      ref={modalRef}
+      className="fixed inset-x-0 z-50 flex flex-col bg-white dark:bg-gray-950 overflow-hidden"
+      style={{ top: 0, height: '100dvh' }}
+    >
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 shrink-0">
@@ -97,7 +104,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
         ))}
       </div>
 
-      {/* Amount display — shrinks when note keyboard is open */}
+      {/* Amount display — shown when numpad is visible */}
       {!noteActive && (
         <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-2 px-5 py-2">
           <div
@@ -124,7 +131,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
         </div>
       )}
 
-      {/* Compact amount row shown while typing note */}
+      {/* Compact amount row while note keyboard is open */}
       {noteActive && (
         <div className="flex items-center justify-center gap-3 px-5 py-4 shrink-0">
           <div
@@ -140,12 +147,10 @@ export default function AddModal({ onSave, onClose, initialData }) {
         </div>
       )}
 
-      {/* Bottom */}
-      <div ref={bottomRef} className="px-4 pt-2 pb-[env(safe-area-inset-bottom,16px)] space-y-2 shrink-0" style={{ willChange: 'transform' }}>
+      {/* Bottom section */}
+      <div className="px-4 pt-2 pb-4 space-y-2 shrink-0">
 
-        {/* Note input
-            - text-[16px] prevents iOS Safari from zooming on focus
-            - onFocus/onBlur toggles noteActive to hide/show the numpad */}
+        {/* Note input — font-size 16px prevents iOS Safari zoom */}
         <input
           type="text"
           value={note}
@@ -176,7 +181,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
           </div>
         )}
 
-        {/* Save / Update button — always visible */}
+        {/* Save / Update button */}
         <button
           onClick={handleSave}
           disabled={!canSave}
