@@ -12,7 +12,8 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [amountStr, setAmountStr] = useState(
     initialData ? String(Math.round(initialData.amount)) : ''
   );
-  const [note, setNote] = useState(initialData?.note || '');
+  const [note, setNote]             = useState(initialData?.note || '');
+  const [noteActive, setNoteActive] = useState(false);
   const date = initialData?.date || todayStr();
 
   const handleKey = (key) => {
@@ -62,7 +63,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Category row */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-100 dark:border-gray-800">
+      <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-100 dark:border-gray-800 scrollbar-hide">
         {EXPENSE_CATEGORIES.map((cat) => (
           <button
             key={cat}
@@ -87,14 +88,11 @@ export default function AddModal({ onSave, onClose, initialData }) {
           {CATEGORY_ICONS[category]}
         </div>
 
-        <p
-          className={`text-4xl font-extrabold tracking-tight ${
-            amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
-          }`}
-        >
+        <p className={`text-4xl font-extrabold tracking-tight ${
+          amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
+        }`}>
           {displayAmount}
         </p>
-
       </div>
 
       {/* Bottom */}
@@ -104,38 +102,43 @@ export default function AddModal({ onSave, onClose, initialData }) {
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder={t.addNote}
+          onFocus={() => setNoteActive(true)}
+          onBlur={() => setNoteActive(false)}
           style={{ fontSize: '16px' }}
           className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
         />
 
-        {/* Numpad */}
-        <div className="grid grid-cols-3 gap-1.5">
-          {KEYS.map((key) => (
-            <button
-              key={key}
-              onClick={() => handleKey(key)}
-              className={`py-3 rounded-2xl text-lg font-bold transition-all active:scale-95 select-none ${
-                key === '⌫'
-                  ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
-                  : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
-              }`}
-            >
-              {key}
-            </button>
-          ))}
-        </div>
+        {!noteActive && (
+          <div className="grid grid-cols-3 gap-1.5">
+            {KEYS.map((key) => (
+              <button
+                key={key}
+                onClick={() => handleKey(key)}
+                className={`py-3 rounded-2xl text-lg font-bold transition-all active:scale-95 select-none ${
+                  key === '⌫'
+                    ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
+                }`}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+        )}
 
-        <button
-          onClick={handleSave}
-          disabled={!canSave}
-          className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
-            canSave
-              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
-              : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
-          }`}
-        >
-          {isEdit ? t.update : t.addExpense}
-        </button>
+        {!noteActive && (
+          <button
+            onClick={handleSave}
+            disabled={!canSave}
+            className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
+              canSave
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
+            }`}
+          >
+            {isEdit ? t.update : t.addExpense}
+          </button>
+        )}
       </div>
     </div>
   );
