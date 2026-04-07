@@ -59,10 +59,11 @@ export default function AddModal({ onSave, onClose, initialData }) {
     : currency.after ? `0 ${currency.symbol}` : `${currency.symbol}0`;
 
   return (
+    <div className="fixed inset-0 z-50 bg-white dark:bg-gray-950">
     <div
       ref={modalRef}
-      className="fixed inset-x-0 z-50 flex flex-col bg-white dark:bg-gray-950 overflow-hidden"
-      style={{ top: 0, height: '100dvh' }}
+      className="absolute inset-x-0 top-0 flex flex-col bg-white dark:bg-gray-950 overflow-hidden"
+      style={{ height: '100dvh' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 shrink-0">
@@ -154,6 +155,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
           {isEdit ? t.update : t.addExpense}
         </button>
       </div>
+    </div>
     </div>
   );
 }
