@@ -79,15 +79,15 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Amount display */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5">
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5">
         <div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
+          className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl"
           style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
         >
           {CATEGORY_ICONS[category]}
         </div>
 
-        <p className={`text-4xl font-extrabold tracking-tight ${
+        <p className={`text-5xl font-extrabold tracking-tight ${
           amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
         }`}>
           {displayAmount}
@@ -95,24 +95,24 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Bottom */}
-      <div className="px-4 pb-6 pt-2 space-y-2 shrink-0">
+      <div className="px-5 pb-8 pt-2 space-y-3 shrink-0">
         <input
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder={t.addNote}
           style={{ fontSize: '16px' }}
-          className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
+          className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
         />
 
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="grid grid-cols-3 gap-2">
           {KEYS.map((key) => (
             <button
               key={key}
               onClick={() => handleKey(key)}
-              className={`py-3 rounded-2xl text-lg font-bold transition-all active:scale-95 select-none ${
+              className={`py-4 rounded-2xl text-xl font-bold transition-all active:scale-95 select-none ${
                 key === '⌫'
-                  ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
+                  ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500 text-lg'
                   : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
               }`}
             >
@@ -124,7 +124,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
         <button
           onClick={handleSave}
           disabled={!canSave}
-          className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
+          className={`w-full py-4 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
             canSave
               ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
               : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
