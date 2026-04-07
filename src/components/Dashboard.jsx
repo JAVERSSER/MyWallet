@@ -5,11 +5,11 @@ import { useLang } from '../hooks/useLang';
 
 export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdit, onDelete }) {
   const { t, fmt, currency } = useLang();
-  const [filterCat, setFilterCat] = useState('All');
+  const [filterCat, setFilterCat]         = useState('All');
   const [editingBudget, setEditingBudget] = useState(false);
-  const [budgetInput, setBudgetInput] = useState(dailyBudget || '');
+  const [budgetInput, setBudgetInput]     = useState(dailyBudget || '');
 
-  // Auto-refresh when the calendar day changes (interval + when app comes back to foreground)
+  // Auto-refresh when the calendar day changes
   const [today, setToday] = useState(todayStr());
   useEffect(() => {
     const check = () => {
@@ -23,10 +23,11 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
       document.removeEventListener('visibilitychange', check);
     };
   }, [today]);
-  const todayTotal  = expenses.filter((e) => e.date === today).reduce((s, e) => s + e.amount, 0);
-  const weekTotal   = filterByDate(expenses, getWeekStart()).reduce((s, e) => s + e.amount, 0);
-  const monthTotal  = filterByDate(expenses, getMonthStart()).reduce((s, e) => s + e.amount, 0);
-  const overBudget  = dailyBudget > 0 && todayTotal > dailyBudget;
+
+  const todayTotal = expenses.filter((e) => e.date === today).reduce((s, e) => s + e.amount, 0);
+  const weekTotal  = filterByDate(expenses, getWeekStart()).reduce((s, e) => s + e.amount, 0);
+  const monthTotal = filterByDate(expenses, getMonthStart()).reduce((s, e) => s + e.amount, 0);
+  const overBudget = dailyBudget > 0 && todayTotal > dailyBudget;
 
   const filtered = expenses.filter((e) => filterCat === 'All' || e.category === filterCat);
 
@@ -47,9 +48,7 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
           <span className="text-3xl">⚠️</span>
           <div className="flex-1">
             <p className="font-extrabold">{t.overBudget}</p>
-            <p className="text-sm opacity-90">
-              {fmt(todayTotal)} {t.spent} · {t.budget} {fmt(dailyBudget)}
-            </p>
+            <p className="text-sm opacity-90">{fmt(todayTotal)} {t.spent} · {t.budget} {fmt(dailyBudget)}</p>
           </div>
           <div className="bg-white/20 rounded-2xl px-3 py-2 text-center shrink-0">
             <p className="text-[10px] font-bold opacity-80 uppercase tracking-wide">{t.overBy}</p>
@@ -82,10 +81,7 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
 
       {/* Budget bar */}
       {dailyBudget > 0 && !editingBudget && (
-        <div
-          className="bg-white dark:bg-gray-900 rounded-3xl p-4 shadow-sm active:scale-[0.98] transition-transform"
-          onClick={() => setEditingBudget(true)}
-        >
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 shadow-sm active:scale-[0.98] transition-transform" onClick={() => setEditingBudget(true)}>
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-2">
               <span>🎯</span>
@@ -96,9 +92,7 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
                 {fmt(todayTotal)} / {fmt(dailyBudget)}
               </span>
               <p className={`text-xs font-bold mt-0.5 ${overBudget ? 'text-red-400' : 'text-indigo-400 dark:text-indigo-500'}`}>
-                {overBudget
-                  ? `+${fmt(todayTotal - dailyBudget)} ${t.overBy}`
-                  : `${fmt(dailyBudget - todayTotal)} ${t.remaining}`}
+                {overBudget ? `+${fmt(todayTotal - dailyBudget)} ${t.overBy}` : `${fmt(dailyBudget - todayTotal)} ${t.remaining}`}
               </p>
             </div>
           </div>
@@ -113,10 +107,7 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
 
       {/* Set budget prompt */}
       {!dailyBudget && !editingBudget && (
-        <button
-          onClick={() => setEditingBudget(true)}
-          className="w-full bg-white dark:bg-gray-900 rounded-3xl p-4 shadow-sm flex items-center gap-3 active:scale-[0.98] transition-transform border-2 border-dashed border-gray-200 dark:border-gray-700"
-        >
+        <button onClick={() => setEditingBudget(true)} className="w-full bg-white dark:bg-gray-900 rounded-3xl p-4 shadow-sm flex items-center gap-3 active:scale-[0.98] transition-transform border-2 border-dashed border-gray-200 dark:border-gray-700">
           <span className="text-2xl">🎯</span>
           <div className="text-left">
             <p className="font-bold text-gray-700 dark:text-gray-200 text-sm">{t.setDailyBudget}</p>
@@ -130,34 +121,14 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 shadow-sm space-y-3">
           <p className="font-bold text-gray-700 dark:text-gray-200">{t.dailyBudget}</p>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-extrabold text-lg">
-              {currency.symbol}
-            </span>
-            <input
-              type="number"
-              min="0"
-              step="1"
-              value={budgetInput}
-              onChange={(e) => setBudgetInput(e.target.value)}
-              placeholder="0"
-              autoFocus
-              inputMode="numeric"
-              className="w-full border-2 border-gray-100 dark:border-gray-700 rounded-2xl pl-9 pr-4 py-3 text-xl font-extrabold bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500"
-            />
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-extrabold text-lg">{currency.symbol}</span>
+            <input type="number" min="0" step="1" value={budgetInput} onChange={(e) => setBudgetInput(e.target.value)}
+              placeholder="0" autoFocus inputMode="numeric"
+              className="w-full border-2 border-gray-100 dark:border-gray-700 rounded-2xl pl-9 pr-4 py-3 text-xl font-extrabold bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500" />
           </div>
           <div className="flex gap-2">
-            <button
-              onClick={saveBudget}
-              className="flex-1 bg-indigo-600 text-white py-3.5 rounded-2xl font-bold active:scale-95 transition-transform shadow-md shadow-indigo-200 dark:shadow-indigo-900"
-            >
-              {t.save}
-            </button>
-            <button
-              onClick={() => setEditingBudget(false)}
-              className="px-5 py-3.5 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-2xl font-bold active:scale-95 transition-transform"
-            >
-              {t.cancel}
-            </button>
+            <button onClick={saveBudget} className="flex-1 bg-indigo-600 text-white py-3.5 rounded-2xl font-bold active:scale-95 transition-transform shadow-md shadow-indigo-200 dark:shadow-indigo-900">{t.save}</button>
+            <button onClick={() => setEditingBudget(false)} className="px-5 py-3.5 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-2xl font-bold active:scale-95 transition-transform">{t.cancel}</button>
           </div>
         </div>
       )}
@@ -167,27 +138,17 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
         <div className="flex items-center justify-between">
           <p className="font-extrabold text-gray-800 dark:text-white text-base">{t.expenses}</p>
           {dailyBudget > 0 && (
-            <button
-              onClick={() => setEditingBudget(true)}
-              className="text-xs font-semibold text-indigo-500 dark:text-indigo-400"
-            >
-              {t.editBudget}
-            </button>
+            <button onClick={() => setEditingBudget(true)} className="text-xs font-semibold text-indigo-500 dark:text-indigo-400">{t.editBudget}</button>
           )}
         </div>
 
         {/* Category filter */}
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
           {['All', ...EXPENSE_CATEGORIES].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setFilterCat(cat)}
+            <button key={cat} onClick={() => setFilterCat(cat)}
               className={`shrink-0 flex items-center gap-1 px-4 py-2 rounded-full text-xs font-bold transition-all active:scale-95 ${
-                filterCat === cat
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-indigo-900'
-                  : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 shadow-sm'
-              }`}
-            >
+                filterCat === cat ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-indigo-900' : 'bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 shadow-sm'
+              }`}>
               {cat !== 'All' && <span>{CATEGORY_ICONS[cat]}</span>}
               <span>{cat === 'All' ? 'All' : catLabel(cat)}</span>
             </button>
@@ -210,34 +171,19 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
                   onClick={() => onEdit(expense)}
                   className="bg-white dark:bg-gray-900 rounded-2xl px-4 py-4 shadow-sm flex items-center gap-3 active:scale-[0.98] transition-transform cursor-pointer"
                 >
-                  <div
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0"
-                    style={{ backgroundColor: CATEGORY_COLORS[expense.category] + '20' }}
-                  >
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+                    style={{ backgroundColor: CATEGORY_COLORS[expense.category] + '20' }}>
                     {CATEGORY_ICONS[expense.category]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-800 dark:text-white text-sm">
-                      {catLabel(expense.category)}
-                    </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                      {expense.note || formatDate(expense.date)}
-                    </p>
-                    {expense.note && (
-                      <p className="text-xs text-gray-300 dark:text-gray-700">{formatDate(expense.date)}</p>
-                    )}
+                    <p className="font-bold text-gray-800 dark:text-white text-sm">{catLabel(expense.category)}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{expense.note || formatDate(expense.date)}</p>
+                    {expense.note && <p className="text-xs text-gray-300 dark:text-gray-700">{formatDate(expense.date)}</p>}
                   </div>
-                  <div
-                    className="flex items-center gap-2 shrink-0"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <span className="font-extrabold text-gray-900 dark:text-white text-base">
-                      {fmt(expense.amount)}
-                    </span>
-                    <button
-                      onClick={() => onDelete(expense.id)}
-                      className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 active:bg-red-50 active:text-red-400 transition-colors"
-                    >
+                  <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <span className="font-extrabold text-gray-900 dark:text-white text-base">{fmt(expense.amount)}</span>
+                    <button onClick={() => onDelete(expense.id)}
+                      className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 active:bg-red-50 active:text-red-400 transition-colors">
                       ✕
                     </button>
                   </div>
@@ -246,12 +192,8 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
             </div>
 
             <div className="bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl px-5 py-3.5 flex justify-between items-center">
-              <span className="text-sm font-bold text-indigo-500 dark:text-indigo-400">
-                {filtered.length} {t.recordsLabel}
-              </span>
-              <span className="font-extrabold text-indigo-700 dark:text-indigo-300 text-base">
-                {fmt(filtered.reduce((s, e) => s + e.amount, 0))}
-              </span>
+              <span className="text-sm font-bold text-indigo-500 dark:text-indigo-400">{filtered.length} {t.recordsLabel}</span>
+              <span className="font-extrabold text-indigo-700 dark:text-indigo-300 text-base">{fmt(filtered.reduce((s, e) => s + e.amount, 0))}</span>
             </div>
           </>
         )}

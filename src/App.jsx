@@ -387,7 +387,7 @@ export default function App() {
           </div>
         </nav>
 
-        {/* Add/Edit modal */}
+        {/* Add / Edit modal */}
         {showModal && (
           <AddModal
             onSave={saveExpense}

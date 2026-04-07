@@ -9,31 +9,27 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const { t, currency } = useLang();
   const isEdit = !!initialData;
   const [category, setCategory]   = useState(initialData?.category || 'Food');
-  const [amountStr, setAmountStr] = useState(
-    initialData ? String(Math.round(initialData.amount)) : ''
-  );
-  const [note, setNote]     = useState(initialData?.note || '');
-  const [date, setDate]     = useState(initialData?.date || todayStr());
+  const [amountStr, setAmountStr] = useState(initialData ? String(Math.round(initialData.amount)) : '');
+  const [note, setNote]           = useState(initialData?.note || '');
+  const [date, setDate]           = useState(initialData?.date || todayStr());
   const [noteActive, setNoteActive] = useState(false);
-  const noteBarRef = useRef(null);
+  const bottomRef = useRef(null);
 
-  // Shift the note bar up by the keyboard height when keyboard opens
+  // Slide the bottom section up by the keyboard height so nothing is hidden
   useEffect(() => {
     if (!noteActive) return;
     const vv = window.visualViewport;
     if (!vv) return;
-    const shift = () => {
-      if (!noteBarRef.current) return;
-      const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      noteBarRef.current.style.transform = `translateY(-${kb}px)`;
+    const update = () => {
+      if (!bottomRef.current) return;
+      const kb = Math.max(0, window.innerHeight - vv.height);
+      bottomRef.current.style.transform = `translateY(-${kb}px)`;
     };
-    shift();
-    vv.addEventListener('resize', shift);
-    vv.addEventListener('scroll', shift);
+    update();
+    vv.addEventListener('resize', update);
     return () => {
-      vv.removeEventListener('resize', shift);
-      vv.removeEventListener('scroll', shift);
-      if (noteBarRef.current) noteBarRef.current.style.transform = '';
+      vv.removeEventListener('resize', update);
+      if (bottomRef.current) bottomRef.current.style.transform = '';
     };
   }, [noteActive]);
 
@@ -69,6 +65,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-950 overflow-hidden">
+
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 shrink-0">
         <button
@@ -100,69 +97,86 @@ export default function AddModal({ onSave, onClose, initialData }) {
         ))}
       </div>
 
-      {/* Amount display */}
-      <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-2 px-5 py-2">
-        <div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
-          style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
-        >
-          {CATEGORY_ICONS[category]}
+      {/* Amount display — shrinks when note keyboard is open */}
+      {!noteActive && (
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-2 px-5 py-2">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
+            style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
+          >
+            {CATEGORY_ICONS[category]}
+          </div>
+
+          <p
+            className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${
+              amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
+            }`}
+          >
+            {displayAmount}
+          </p>
+
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="text-xs text-gray-400 dark:text-gray-500 bg-transparent border-none focus:outline-none text-center"
+          />
         </div>
+      )}
 
-        <p
-          className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${
-            amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
-          }`}
-        >
-          {displayAmount}
-        </p>
+      {/* Compact amount row shown while typing note */}
+      {noteActive && (
+        <div className="flex items-center justify-center gap-3 px-5 py-4 shrink-0">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-2xl shrink-0"
+            style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
+          >
+            {CATEGORY_ICONS[category]}
+          </div>
+          <p className={`text-2xl font-extrabold tracking-tight ${amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-300 dark:text-gray-700'}`}>
+            {displayAmount}
+          </p>
+          <span className="text-xs text-gray-400 dark:text-gray-500">{date}</span>
+        </div>
+      )}
 
+      {/* Bottom */}
+      <div ref={bottomRef} className="px-4 pt-2 pb-[env(safe-area-inset-bottom,16px)] space-y-2 shrink-0" style={{ willChange: 'transform' }}>
+
+        {/* Note input
+            - text-[16px] prevents iOS Safari from zooming on focus
+            - onFocus/onBlur toggles noteActive to hide/show the numpad */}
         <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="text-xs text-gray-400 dark:text-gray-500 bg-transparent border-none focus:outline-none text-center"
+          type="text"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          onFocus={() => setNoteActive(true)}
+          onBlur={() => setNoteActive(false)}
+          placeholder={t.addNote}
+          className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
+          style={{ fontSize: '16px' }}
         />
-      </div>
 
-      {/* Bottom — numpad + note (shown when keyboard is closed) */}
-      <div className="px-4 pt-2 pb-[env(safe-area-inset-bottom,16px)] space-y-2 shrink-0">
-        {/* Note trigger row */}
-        <button
-          onClick={() => setNoteActive(true)}
-          className="w-full flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-2xl px-4 py-3 text-left"
-        >
-          <span className="text-base">📝</span>
-          <span className={`flex-1 text-base font-medium ${note ? 'text-gray-700 dark:text-gray-200' : 'text-gray-300 dark:text-gray-700'}`}>
-            {note || t.addNote}
-          </span>
-          {note && (
-            <span
-              onClickCapture={(e) => { e.stopPropagation(); setNote(''); }}
-              className="w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-bold shrink-0"
-            >
-              ✕
-            </span>
-          )}
-        </button>
+        {/* Numpad — hidden while system keyboard is open */}
+        {!noteActive && (
+          <div className="grid grid-cols-3 gap-1.5">
+            {KEYS.map((key) => (
+              <button
+                key={key}
+                onClick={() => handleKey(key)}
+                className={`py-3 rounded-xl text-lg font-bold transition-all active:scale-95 select-none ${
+                  key === '⌫'
+                    ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
+                }`}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+        )}
 
-        {/* Numpad */}
-        <div className="grid grid-cols-3 gap-1.5">
-          {KEYS.map((key) => (
-            <button
-              key={key}
-              onClick={() => handleKey(key)}
-              className={`py-3 rounded-xl text-lg font-bold transition-all active:scale-95 select-none ${
-                key === '⌫'
-                  ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
-                  : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
-              }`}
-            >
-              {key}
-            </button>
-          ))}
-        </div>
-
+        {/* Save / Update button — always visible */}
         <button
           onClick={handleSave}
           disabled={!canSave}
@@ -175,48 +189,6 @@ export default function AddModal({ onSave, onClose, initialData }) {
           {isEdit ? t.update : t.addExpense}
         </button>
       </div>
-
-      {/* Note input overlay — floats above keyboard on all devices */}
-      {noteActive && (
-        <div
-          ref={noteBarRef}
-          className="fixed inset-x-0 bottom-0 z-[60] bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 px-4 pt-3 pb-[env(safe-area-inset-bottom,12px)] space-y-2 shadow-2xl"
-          style={{ willChange: 'transform' }}
-        >
-          <div className="relative">
-            <input
-              type="text"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              onBlur={() => setNoteActive(false)}
-              placeholder={t.addNote}
-              autoFocus
-              className="w-full text-left bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 pr-10 py-3 text-base font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
-            />
-            {note.length > 0 && (
-              <button
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => setNote('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-bold"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-          <button
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => { setNoteActive(false); if (canSave) handleSave(); }}
-            disabled={!canSave}
-            className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
-              canSave
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
-                : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
-            }`}
-          >
-            {isEdit ? t.update : t.addExpense}
-          </button>
-        </div>
-      )}
     </div>
   );
 }
