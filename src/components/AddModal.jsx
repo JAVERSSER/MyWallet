@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
 import { todayStr } from '../utils/dateUtils';
 import { useLang } from '../hooks/useLang';
@@ -8,13 +8,30 @@ const KEYS = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '00', '0', '⌫'];
 export default function AddModal({ onSave, onClose, initialData }) {
   const { t, currency } = useLang();
   const isEdit = !!initialData;
-  const [category, setCategory]   = useState(initialData?.category || 'Food');
-  const [amountStr, setAmountStr] = useState(
-    initialData ? String(Math.round(initialData.amount)) : ''
-  );
+  const [category, setCategory]     = useState(initialData?.category || 'Food');
+  const [amountStr, setAmountStr]   = useState(initialData ? String(Math.round(initialData.amount)) : '');
   const [note, setNote]             = useState(initialData?.note || '');
   const [noteActive, setNoteActive] = useState(false);
+  const modalRef = useRef(null);
   const date = initialData?.date || todayStr();
+
+  // Resize to visual viewport — makes save button follow keyboard up on iPhone
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => {
+      if (!modalRef.current) return;
+      modalRef.current.style.height = `${vv.height}px`;
+      modalRef.current.style.top    = `${vv.offsetTop}px`;
+    };
+    update();
+    vv.addEventListener('resize', update);
+    vv.addEventListener('scroll', update);
+    return () => {
+      vv.removeEventListener('resize', update);
+      vv.removeEventListener('scroll', update);
+    };
+  }, []);
 
   const handleKey = (key) => {
     if (key === '⌫') {
@@ -47,7 +64,11 @@ export default function AddModal({ onSave, onClose, initialData }) {
     : currency.after ? `0 ${currency.symbol}` : `${currency.symbol}0`;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-950">
+    <div
+      ref={modalRef}
+      className="fixed inset-x-0 z-50 flex flex-col bg-white dark:bg-gray-950 overflow-hidden"
+      style={{ top: 0, height: '100dvh' }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 shrink-0">
         <button
@@ -79,8 +100,8 @@ export default function AddModal({ onSave, onClose, initialData }) {
         ))}
       </div>
 
-      {/* Amount display */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5">
+      {/* Amount display — flex-1 shrinks naturally when keyboard opens */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5 min-h-0">
         <div
           className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
           style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
@@ -95,15 +116,15 @@ export default function AddModal({ onSave, onClose, initialData }) {
         </p>
       </div>
 
-      {/* Bottom */}
-      <div className="px-4 pb-6 pt-2 space-y-2 shrink-0">
+      {/* Bottom — shrink-0 keeps it pinned to bottom of (resized) viewport */}
+      <div className="px-4 pt-2 pb-[env(safe-area-inset-bottom,20px)] space-y-2 shrink-0">
         <input
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder={t.addNote}
           onFocus={() => setNoteActive(true)}
           onBlur={() => setNoteActive(false)}
+          placeholder={t.addNote}
           style={{ fontSize: '16px' }}
           className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
         />
@@ -126,19 +147,17 @@ export default function AddModal({ onSave, onClose, initialData }) {
           </div>
         )}
 
-        {!noteActive && (
-          <button
-            onClick={handleSave}
-            disabled={!canSave}
-            className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
-              canSave
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
-                : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
-            }`}
-          >
-            {isEdit ? t.update : t.addExpense}
-          </button>
-        )}
+        <button
+          onClick={handleSave}
+          disabled={!canSave}
+          className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
+            canSave
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
+              : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
+          }`}
+        >
+          {isEdit ? t.update : t.addExpense}
+        </button>
       </div>
     </div>
   );
