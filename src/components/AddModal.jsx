@@ -12,16 +12,16 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [amountStr, setAmountStr]   = useState(initialData ? String(Math.round(initialData.amount)) : '');
   const [note, setNote]             = useState(initialData?.note || '');
   const [noteActive, setNoteActive] = useState(false);
-  const modalRef = useRef(null);
+  const innerRef = useRef(null);
   const date = initialData?.date || todayStr();
 
-  // Resize height to visual viewport so save button follows keyboard up on iPhone
+  // Shrink inner container to visual viewport height so keyboard pushes content up
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
     const update = () => {
-      if (!modalRef.current) return;
-      modalRef.current.style.height = `${vv.height}px`;
+      if (!innerRef.current) return;
+      innerRef.current.style.height = `${vv.height}px`;
     };
     update();
     vv.addEventListener('resize', update);
@@ -59,103 +59,123 @@ export default function AddModal({ onSave, onClose, initialData }) {
     : currency.after ? `0 ${currency.symbol}` : `${currency.symbol}0`;
 
   return (
+    /* Outer: covers full screen always — hides home page */
     <div className="fixed inset-0 z-50 bg-white dark:bg-gray-950">
-    <div
-      ref={modalRef}
-      className="absolute inset-x-0 top-0 flex flex-col bg-white dark:bg-gray-950 overflow-hidden"
-      style={{ height: '100dvh' }}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 shrink-0">
-        <button
-          onClick={onClose}
-          className="text-sm font-semibold text-gray-400 dark:text-gray-500 active:text-gray-700 dark:active:text-gray-300"
-        >
-          {t.cancel}
-        </button>
-        <p className="font-extrabold text-gray-900 dark:text-white">
-          {isEdit ? t.editExpense : t.newExpense}
-        </p>
-        <div className="w-14" />
-      </div>
-
-      {/* Category row */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-100 dark:border-gray-800 scrollbar-hide">
-        {EXPENSE_CATEGORIES.map((cat) => (
+      {/* Inner: shrinks with keyboard */}
+      <div
+        ref={innerRef}
+        className="flex flex-col overflow-hidden w-full"
+        style={{ height: '100dvh' }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 shrink-0">
           <button
-            key={cat}
-            onClick={() => setCategory(cat)}
-            className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
-              category === cat ? 'text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
-            }`}
-            style={category === cat ? { backgroundColor: CATEGORY_COLORS[cat] } : {}}
+            onClick={onClose}
+            className="text-sm font-semibold text-gray-400 dark:text-gray-500 active:text-gray-700 dark:active:text-gray-300"
           >
-            <span className="text-base">{CATEGORY_ICONS[cat]}</span>
-            <span>{catLabel(cat)}</span>
+            {t.cancel}
           </button>
-        ))}
-      </div>
-
-      {/* Amount display — flex-1 shrinks naturally when keyboard opens */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5 min-h-0">
-        <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
-          style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
-        >
-          {CATEGORY_ICONS[category]}
+          <p className="font-extrabold text-gray-900 dark:text-white">
+            {isEdit ? t.editExpense : t.newExpense}
+          </p>
+          <div className="w-14" />
         </div>
 
-        <p className={`text-4xl font-extrabold tracking-tight ${
-          amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
-        }`}>
-          {displayAmount}
-        </p>
-      </div>
+        {/* Category row */}
+        <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-100 dark:border-gray-800 scrollbar-hide">
+          {EXPENSE_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategory(cat)}
+              className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
+                category === cat ? 'text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+              }`}
+              style={category === cat ? { backgroundColor: CATEGORY_COLORS[cat] } : {}}
+            >
+              <span className="text-base">{CATEGORY_ICONS[cat]}</span>
+              <span>{catLabel(cat)}</span>
+            </button>
+          ))}
+        </div>
 
-      {/* Bottom — shrink-0 keeps it pinned to bottom of (resized) viewport */}
-      <div className="px-4 pt-2 pb-[env(safe-area-inset-bottom,20px)] space-y-2 shrink-0">
-        <input
-          type="text"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          onFocus={() => setNoteActive(true)}
-          onBlur={() => setNoteActive(false)}
-          placeholder={t.addNote}
-          style={{ fontSize: '16px' }}
-          className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
-        />
-
+        {/* Amount — hidden when keyboard is open so nothing scrolls */}
         {!noteActive && (
-          <div className="grid grid-cols-3 gap-1.5">
-            {KEYS.map((key) => (
-              <button
-                key={key}
-                onClick={() => handleKey(key)}
-                className={`py-3 rounded-2xl text-lg font-bold transition-all active:scale-95 select-none ${
-                  key === '⌫'
-                    ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
-                    : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
-                }`}
-              >
-                {key}
-              </button>
-            ))}
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5 min-h-0">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
+              style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
+            >
+              {CATEGORY_ICONS[category]}
+            </div>
+            <p className={`text-4xl font-extrabold tracking-tight ${
+              amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
+            }`}>
+              {displayAmount}
+            </p>
           </div>
         )}
 
-        <button
-          onClick={handleSave}
-          disabled={!canSave}
-          className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
-            canSave
-              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
-              : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
-          }`}
-        >
-          {isEdit ? t.update : t.addExpense}
-        </button>
+        {/* Compact amount when note keyboard open */}
+        {noteActive && (
+          <div className="flex items-center justify-center gap-3 px-5 py-3 shrink-0">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+              style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
+            >
+              {CATEGORY_ICONS[category]}
+            </div>
+            <p className={`text-2xl font-extrabold tracking-tight ${
+              amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-300 dark:text-gray-700'
+            }`}>
+              {displayAmount}
+            </p>
+          </div>
+        )}
+
+        {/* Bottom */}
+        <div className="px-4 pt-2 pb-[env(safe-area-inset-bottom,16px)] space-y-2 shrink-0">
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            onFocus={() => setNoteActive(true)}
+            onBlur={() => setNoteActive(false)}
+            placeholder={t.addNote}
+            style={{ fontSize: '16px' }}
+            className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
+          />
+
+          {!noteActive && (
+            <div className="grid grid-cols-3 gap-1.5">
+              {KEYS.map((key) => (
+                <button
+                  key={key}
+                  onClick={() => handleKey(key)}
+                  className={`py-3 rounded-2xl text-lg font-bold transition-all active:scale-95 select-none ${
+                    key === '⌫'
+                      ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500'
+                      : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
+                  }`}
+                >
+                  {key}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <button
+            onClick={handleSave}
+            disabled={!canSave}
+            className={`w-full py-3.5 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
+              canSave
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/60'
+                : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
+            }`}
+          >
+            {isEdit ? t.update : t.addExpense}
+          </button>
+        </div>
       </div>
-    </div>
     </div>
   );
 }
