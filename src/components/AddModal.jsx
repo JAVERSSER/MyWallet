@@ -15,7 +15,6 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const innerRef = useRef(null);
   const date = initialData?.date || todayStr();
 
-  // Shrink inner container to visual viewport height so keyboard pushes content up
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
@@ -59,9 +58,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
     : currency.after ? `0 ${currency.symbol}` : `${currency.symbol}0`;
 
   return (
-    /* Outer: covers full screen always — hides home page */
     <div className="fixed inset-0 z-50 bg-white dark:bg-gray-950">
-      {/* Inner: shrinks with keyboard */}
       <div
         ref={innerRef}
         className="flex flex-col overflow-hidden w-full"
@@ -98,39 +95,20 @@ export default function AddModal({ onSave, onClose, initialData }) {
           ))}
         </div>
 
-        {/* Amount — hidden when keyboard is open so nothing scrolls */}
-        {!noteActive && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5 min-h-0">
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
-              style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
-            >
-              {CATEGORY_ICONS[category]}
-            </div>
-            <p className={`text-4xl font-extrabold tracking-tight ${
-              amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
-            }`}>
-              {displayAmount}
-            </p>
+        {/* Amount */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5 min-h-0">
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
+            style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
+          >
+            {CATEGORY_ICONS[category]}
           </div>
-        )}
-
-        {/* Compact amount when note keyboard open */}
-        {noteActive && (
-          <div className="flex items-center justify-center gap-3 px-5 py-3 shrink-0">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
-              style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
-            >
-              {CATEGORY_ICONS[category]}
-            </div>
-            <p className={`text-2xl font-extrabold tracking-tight ${
-              amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-300 dark:text-gray-700'
-            }`}>
-              {displayAmount}
-            </p>
-          </div>
-        )}
+          <p className={`text-4xl font-extrabold tracking-tight ${
+            amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
+          }`}>
+            {displayAmount}
+          </p>
+        </div>
 
         {/* Bottom */}
         <div className="px-4 pt-2 pb-[env(safe-area-inset-bottom,16px)] space-y-2 shrink-0">
