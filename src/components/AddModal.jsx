@@ -93,7 +93,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Amount */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 px-5 min-h-0">
+      <div className={`flex-1 flex flex-col items-center justify-center gap-3 px-5 min-h-0 mt-[50px] ${noteActive ? 'hidden' : ''}`}>
         <div
           className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center text-3xl sm:text-4xl"
           style={{ backgroundColor: CATEGORY_COLORS[category] + '25' }}
@@ -113,7 +113,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Bottom */}
-      <div className="px-5 pb-3 flex flex-col gap-3 min-h-0">
+      <div className={`px-5 pb-3 flex flex-col gap-3 min-h-0 ${noteActive ? 'flex-1 justify-center' : ''}`}>
 
         {/* Input */}
         <input
@@ -138,7 +138,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
           "
         />
 
-        {/* Keypad — hidden when note input is focused so iPhone keyboard takes that space */}
+        {/* Keypad — hidden when note input is focused */}
         <div className={`grid grid-cols-3 gap-2 flex-1 auto-rows-fr ${noteActive ? 'hidden' : ''}`}>
           {KEYS.map((key) => (
             <button
@@ -155,19 +155,17 @@ export default function AddModal({ onSave, onClose, initialData }) {
           ))}
         </div>
 
-        {/* Save / Done button */}
+        {/* Save button — hidden when note input is focused */}
         <button
-          onClick={noteActive ? (e) => e.target.blur() : handleSave}
-          disabled={!noteActive && !canSave}
-          className={`w-full py-3 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
-            noteActive
-              ? 'bg-gray-700 text-white shadow-lg'
-              : canSave
+          onClick={handleSave}
+          disabled={!canSave}
+          className={`w-full py-3 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${noteActive ? 'hidden' : ''} ${
+            canSave
               ? 'bg-indigo-600 text-white shadow-lg'
               : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
           }`}
         >
-          {noteActive ? 'Done' : isEdit ? t.update : t.addExpense}
+          {isEdit ? t.update : t.addExpense}
         </button>
       </div>
     </div>
