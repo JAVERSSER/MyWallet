@@ -51,7 +51,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
     <div
       className="
         fixed inset-0 z-50 flex flex-col
-        h-[100dvh] overflow-hidden
+        max-h-[100dvh] overflow-auto
         bg-slate-100 dark:bg-gray-950
         pt-[env(safe-area-inset-top)]
         pb-[env(safe-area-inset-bottom)]
@@ -118,7 +118,9 @@ export default function AddModal({ onSave, onClose, initialData }) {
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          onFocus={(e) => e.target.scrollIntoView({ block: 'center' })}
+          onFocus={(e) =>
+            setTimeout(() => e.target.scrollIntoView({ block: 'center' }), 300)
+          }
           placeholder={t.addNote}
           inputMode="text"
           autoComplete="off"
