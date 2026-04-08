@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
 import { todayStr } from '../utils/dateUtils';
 import { useLang } from '../hooks/useLang';
@@ -12,16 +12,6 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [category, setCategory] = useState(initialData?.category || 'Food');
   const [amountStr, setAmountStr] = useState(initialData ? String(Math.round(initialData.amount)) : '');
   const [note, setNote] = useState(initialData?.note || '');
-  const [viewH, setViewH] = useState(() => window.visualViewport?.height ?? window.innerHeight);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const onResize = () => setViewH(vv.height);
-    vv.addEventListener('resize', onResize);
-    return () => vv.removeEventListener('resize', onResize);
-  }, []);
 
   const date = initialData?.date || todayStr();
 
@@ -59,15 +49,14 @@ export default function AddModal({ onSave, onClose, initialData }) {
 
   return (
     <div
-      ref={containerRef}
-      style={{ height: viewH }}
       className="
         fixed inset-0 z-50 flex flex-col
-        overflow-hidden
+        h-[100dvh] overflow-hidden
         bg-slate-100 dark:bg-gray-950
         pt-[env(safe-area-inset-top)]
         pb-[env(safe-area-inset-bottom)]
       "
+      onTouchMove={(e) => e.preventDefault()}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3 shrink-0">
@@ -84,7 +73,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Category */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-2 shrink-0 border-b border-gray-200 dark:border-gray-800 scrollbar-hide">
+      <div className="flex gap-2 overflow-x-auto px-5 pb-2 shrink-0 border-b border-gray-200 dark:border-gray-800 scrollbar-hide" onTouchMove={(e) => e.stopPropagation()}>
         {EXPENSE_CATEGORIES.map((cat) => (
           <button
             key={cat}
