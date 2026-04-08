@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
 import { todayStr } from '../utils/dateUtils';
 import { useLang } from '../hooks/useLang';
@@ -13,6 +13,15 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [amountStr, setAmountStr] = useState(initialData ? String(Math.round(initialData.amount)) : '');
   const [note, setNote] = useState(initialData?.note || '');
   const [noteActive, setNoteActive] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const prevent = (e) => e.preventDefault();
+    el.addEventListener('touchmove', prevent, { passive: false });
+    return () => el.removeEventListener('touchmove', prevent);
+  }, []);
 
   const date = initialData?.date || todayStr();
 
@@ -50,6 +59,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
 
   return (
     <div
+      ref={containerRef}
       className="
         fixed inset-0 z-50 flex flex-col
         h-[100dvh] overflow-hidden
@@ -57,7 +67,6 @@ export default function AddModal({ onSave, onClose, initialData }) {
         pt-[env(safe-area-inset-top)]
         pb-[env(safe-area-inset-bottom)]
       "
-      onTouchMove={(e) => e.preventDefault()}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3 shrink-0">
@@ -74,7 +83,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Category */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-2 shrink-0 border-b border-gray-200 dark:border-gray-800 scrollbar-hide" onTouchMove={(e) => e.stopPropagation()}>
+      <div className="flex gap-2 overflow-x-auto px-5 pb-2 shrink-0 border-b border-gray-200 dark:border-gray-800 scrollbar-hide">
         {EXPENSE_CATEGORIES.map((cat) => (
           <button
             key={cat}
