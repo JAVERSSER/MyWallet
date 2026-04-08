@@ -122,7 +122,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Bottom */}
-      <div className={`px-5 pb-3 flex flex-col gap-3 min-h-0 ${noteActive ? 'flex-1 justify-center' : ''}`}>
+      <div className={`px-5 pb-3 flex flex-col gap-3 min-h-0 ${noteActive ? 'pt-[250px]' : ''}`}>
 
         {/* Input */}
         <input
