@@ -194,7 +194,6 @@ export default function App() {
   const [dailyBudget, setDailyBudget]   = useLocalStorage('mywallet-budget', 0);
   const [langCode, setLangCode]         = useLocalStorage('mywallet-lang', 'km');
   const [currencyCode, setCurrencyCode] = useLocalStorage('mywallet-currency', 'KHR');
-  const [lastDate, setLastDate]         = useLocalStorage('mywallet-lastdate', '');
 
   const [editingExpense, setEditingExpense] = useState(null);
   const [showModal, setShowModal]           = useState(false);
@@ -205,14 +204,6 @@ export default function App() {
 
   const prevCurrencyRef = useRef(currencyCode);
 
-  // Auto-clear expenses when a new day starts
-  useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    if (lastDate && lastDate !== today) {
-      setExpenses([]);
-    }
-    setLastDate(today);
-  }, []);
 
   useEffect(() => {
     const prevCode = prevCurrencyRef.current;

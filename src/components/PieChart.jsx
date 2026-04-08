@@ -9,19 +9,19 @@ export default function PieChart({ data }) {
 
   let cumulativeAngle = -Math.PI / 2;
 
-  const slices = data
-    .filter((d) => d.value > 0)
-    .map((d) => {
-      const angle = (d.value / total) * 2 * Math.PI;
-      const x1 = cx + r * Math.cos(cumulativeAngle);
-      const y1 = cy + r * Math.sin(cumulativeAngle);
-      cumulativeAngle += angle;
-      const x2 = cx + r * Math.cos(cumulativeAngle);
-      const y2 = cy + r * Math.sin(cumulativeAngle);
-      const largeArcFlag = angle > Math.PI ? 1 : 0;
-      const path = `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
-      return { ...d, path };
-    });
+  const filtered = data.filter((d) => d.value > 0);
+
+  const slices = filtered.map((d, i) => {
+    const angle = filtered.length === 1 ? 2 * Math.PI - 0.001 : (d.value / total) * 2 * Math.PI;
+    const x1 = cx + r * Math.cos(cumulativeAngle);
+    const y1 = cy + r * Math.sin(cumulativeAngle);
+    cumulativeAngle += angle;
+    const x2 = cx + r * Math.cos(cumulativeAngle);
+    const y2 = cy + r * Math.sin(cumulativeAngle);
+    const largeArcFlag = angle > Math.PI ? 1 : 0;
+    const path = `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+    return { ...d, path };
+  });
 
   return (
     <div className="flex flex-col items-center gap-4">
