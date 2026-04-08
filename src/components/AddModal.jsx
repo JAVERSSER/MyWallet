@@ -93,7 +93,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Bottom */}
-      <div className="px-5 pb-8 space-y-3 shrink-0 mt-[100px] mb-[20px]">
+      <div className="px-5 pb-8 space-y-3 shrink-0 mt-[80px] mb-[20px]">
         <input
           type="text"
           value={note}
