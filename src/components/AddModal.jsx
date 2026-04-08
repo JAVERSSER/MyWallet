@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
 import { EXPENSE_CATEGORIES, CATEGORY_COLORS, CATEGORY_ICONS } from '../utils/categories';
 import { todayStr } from '../utils/dateUtils';
 import { useLang } from '../hooks/useLang';
@@ -14,6 +15,22 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [note, setNote]           = useState(initialData?.note || '');
 
   const date = initialData?.date || todayStr();
+
+  // Lock body scroll when modal is open — prevents iOS from scrolling
+  useEffect(() => {
+    const y = window.scrollY;
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${y}px`;
+    document.body.style.width = '100%';
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, y);
+    };
+  }, []);
 
   const handleKey = (key) => {
     if (key === '⌫') {
