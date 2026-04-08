@@ -44,7 +44,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
     : currency.after ? `0 ${currency.symbol}` : `${currency.symbol}0`;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-950">
+    <div className="fixed inset-0 z-50 flex flex-col bg-slate-100 dark:bg-gray-950">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 shrink-0">
         <button
@@ -60,13 +60,13 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Category row */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-100 dark:border-gray-800 scrollbar-hide">
+      <div className="flex gap-2 overflow-x-auto px-5 pb-4 shrink-0 border-b border-gray-200 dark:border-gray-800 scrollbar-hide">
         {EXPENSE_CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setCategory(cat)}
             className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all active:scale-95 ${
-              category === cat ? 'text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+              category === cat ? 'text-white shadow-md' : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 shadow-sm'
             }`}
             style={category === cat ? { backgroundColor: CATEGORY_COLORS[cat] } : {}}
           >
@@ -84,34 +84,33 @@ export default function AddModal({ onSave, onClose, initialData }) {
         >
           {CATEGORY_ICONS[category]}
         </div>
-
         <p className={`text-5xl font-extrabold tracking-tight ${
-          amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-200 dark:text-gray-800'
+          amount > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-300 dark:text-gray-700'
         }`}>
           {displayAmount}
         </p>
       </div>
 
       {/* Bottom */}
-      <div className="px-5 pb-8 space-y-3 shrink-0 mt-[80px] mb-[20px]">
+      <div className="px-5 pb-6 space-y-3 shrink-0 mt-[40px] mb-[20px]">
         <input
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder={t.addNote}
-          className="w-full text-center bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
+          style={{ fontSize: '16px' }}
+          className="w-full text-center bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-2xl px-4 py-3 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 placeholder-gray-300 dark:placeholder-gray-700"
         />
 
-        {/* Numpad */}
         <div className="grid grid-cols-3 gap-2">
           {KEYS.map((key) => (
             <button
               key={key}
               onClick={() => handleKey(key)}
-              className={`py-4 rounded-2xl text-xl font-bold transition-all active:scale-95 select-none ${
+              className={`py-2.5 rounded-2xl text-base font-bold transition-all active:scale-[0.97] select-none shadow-sm ${
                 key === '⌫'
-                  ? 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500 text-lg'
-                  : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white'
+                  ? 'bg-white dark:bg-gray-900 text-gray-400 dark:text-gray-500'
+                  : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-white'
               }`}
             >
               {key}
