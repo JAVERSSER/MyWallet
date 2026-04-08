@@ -14,6 +14,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [note, setNote] = useState(initialData?.note || '');
   const [noteActive, setNoteActive] = useState(false);
   const containerRef = useRef(null);
+  const categoryRef = useRef(null);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -21,6 +22,14 @@ export default function AddModal({ onSave, onClose, initialData }) {
     const prevent = (e) => e.preventDefault();
     el.addEventListener('touchmove', prevent, { passive: false });
     return () => el.removeEventListener('touchmove', prevent);
+  }, []);
+
+  useEffect(() => {
+    const el = categoryRef.current;
+    if (!el) return;
+    const allow = (e) => e.stopPropagation();
+    el.addEventListener('touchmove', allow, { passive: true });
+    return () => el.removeEventListener('touchmove', allow);
   }, []);
 
   const date = initialData?.date || todayStr();
@@ -83,7 +92,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Category */}
-      <div className="flex gap-2 overflow-x-auto px-5 pb-2 shrink-0 border-b border-gray-200 dark:border-gray-800 scrollbar-hide">
+      <div ref={categoryRef} className="flex gap-2 overflow-x-auto px-5 pb-2 shrink-0 border-b border-gray-200 dark:border-gray-800 scrollbar-hide">
         {EXPENSE_CATEGORIES.map((cat) => (
           <button
             key={cat}
@@ -122,7 +131,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
       </div>
 
       {/* Bottom */}
-      <div className={`px-5 pb-3 flex flex-col gap-3 min-h-0 ${noteActive ? 'flex-1 justify-center pt-[200px]' : ''}`}>
+      <div className={`px-5 pb-3 flex flex-col gap-3 min-h-0 ${noteActive ? 'flex-1 justify-center' : ''}`}>
 
         {/* Input */}
         <input
