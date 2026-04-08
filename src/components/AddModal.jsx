@@ -12,6 +12,7 @@ export default function AddModal({ onSave, onClose, initialData }) {
   const [category, setCategory] = useState(initialData?.category || 'Food');
   const [amountStr, setAmountStr] = useState(initialData ? String(Math.round(initialData.amount)) : '');
   const [note, setNote] = useState(initialData?.note || '');
+  const [noteActive, setNoteActive] = useState(false);
 
   const date = initialData?.date || todayStr();
 
@@ -119,7 +120,10 @@ export default function AddModal({ onSave, onClose, initialData }) {
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
+          onFocus={() => setNoteActive(true)}
+          onBlur={() => setNoteActive(false)}
           placeholder={t.addNote}
+          style={{ fontSize: '16px' }}
           inputMode="text"
           autoComplete="off"
           autoCorrect="off"
@@ -131,12 +135,11 @@ export default function AddModal({ onSave, onClose, initialData }) {
             rounded-2xl px-4 py-3 text-base font-medium
             shadow-sm
             focus:outline-none focus:ring-2 focus:ring-indigo-400
-            focus:scale-105 focus:shadow-lg
           "
         />
 
-        {/* Keypad */}
-        <div className="grid grid-cols-3 gap-2 flex-1 auto-rows-fr">
+        {/* Keypad — hidden when note input is focused so iPhone keyboard takes that space */}
+        <div className={`grid grid-cols-3 gap-2 flex-1 auto-rows-fr ${noteActive ? 'hidden' : ''}`}>
           {KEYS.map((key) => (
             <button
               key={key}
@@ -152,17 +155,19 @@ export default function AddModal({ onSave, onClose, initialData }) {
           ))}
         </div>
 
-        {/* Save button */}
+        {/* Save / Done button */}
         <button
-          onClick={handleSave}
-          disabled={!canSave}
+          onClick={noteActive ? (e) => e.target.blur() : handleSave}
+          disabled={!noteActive && !canSave}
           className={`w-full py-3 rounded-2xl font-extrabold text-base transition-all active:scale-95 ${
-            canSave
+            noteActive
+              ? 'bg-gray-700 text-white shadow-lg'
+              : canSave
               ? 'bg-indigo-600 text-white shadow-lg'
               : 'bg-gray-100 dark:bg-gray-900 text-gray-300 dark:text-gray-700'
           }`}
         >
-          {isEdit ? t.update : t.addExpense}
+          {noteActive ? 'Done' : isEdit ? t.update : t.addExpense}
         </button>
       </div>
     </div>
