@@ -58,7 +58,7 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
           <div className="w-px h-8 bg-white/20" />
           <div>
             <p className="text-xs opacity-60">{t.records}</p>
-            <p className="text-lg font-bold">{expenses.filter((e) => e.date === today).length}</p>
+            <p className="text-lg font-bold">{expenses.length}</p>
           </div>
         </div>
       </div>

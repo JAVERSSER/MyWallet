@@ -188,7 +188,7 @@ function Toast({ message, onDone }) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab]       = useLocalStorage('mywallet-tab', 'home');
+  const [activeTab, setActiveTab]       = useState('home');
   const [darkMode, setDarkMode]         = useLocalStorage('mywallet-darkmode', false);
   const [expenses, setExpenses]         = useLocalStorage('mywallet-expenses', []);
   const [dailyBudget, setDailyBudget]   = useLocalStorage('mywallet-budget', 0);

@@ -17,12 +17,12 @@ function getFiltered(expenses, period, customDate) {
   if (period === 'month')     return filterByDate(expenses, getMonthStart());
   if (period === 'year')      return filterByDate(expenses, getYearStart());
   if (period === 'custom')    return customDate ? expenses.filter((e) => e.date === customDate) : [];
-  return expenses; // 'all'
+  return expenses;
 }
 
 export default function Reports({ expenses }) {
   const { t, fmt } = useLang();
-  const [period, setPeriod] = useState('today');
+  const [period, setPeriod]         = useState('today');
   const [customDate, setCustomDate] = useState('');
 
   const PERIODS = [
