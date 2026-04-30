@@ -11,12 +11,11 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
 
   const today = todayStr();
   const todayTotal  = expenses.filter((e) => e.date === today).reduce((s, e) => s + e.amount, 0);
-  const allTotal    = expenses.reduce((s, e) => s + e.amount, 0);
   const weekTotal   = filterByDate(expenses, getWeekStart()).reduce((s, e) => s + e.amount, 0);
   const monthTotal  = filterByDate(expenses, getMonthStart()).reduce((s, e) => s + e.amount, 0);
   const overBudget  = dailyBudget > 0 && todayTotal > dailyBudget;
 
-  const filtered = expenses.filter((e) => filterCat === 'All' || e.category === filterCat);
+  const filtered = expenses.filter((e) => e.date === today && (filterCat === 'All' || e.category === filterCat));
 
   const saveBudget = () => {
     const val = parseFloat(budgetInput);
@@ -45,7 +44,7 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
       {/* Main summary card */}
       <div className="bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 rounded-3xl p-6 text-white shadow-xl shadow-indigo-200 dark:shadow-indigo-900/60">
         <p className="text-sm font-semibold opacity-70 uppercase tracking-widest">{t.today}</p>
-        <p className="text-5xl font-extrabold tracking-tight mt-1">{fmt(allTotal)}</p>
+        <p className="text-5xl font-extrabold tracking-tight mt-1">{fmt(todayTotal)}</p>
         <div className="flex items-center gap-5 mt-5">
           <div>
             <p className="text-xs opacity-60">{t.thisWeek}</p>
@@ -59,7 +58,7 @@ export default function Dashboard({ expenses, dailyBudget, setDailyBudget, onEdi
           <div className="w-px h-8 bg-white/20" />
           <div>
             <p className="text-xs opacity-60">{t.records}</p>
-            <p className="text-lg font-bold">{expenses.length}</p>
+            <p className="text-lg font-bold">{expenses.filter((e) => e.date === today).length}</p>
           </div>
         </div>
       </div>

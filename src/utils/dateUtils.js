@@ -19,7 +19,8 @@ export const getWeekStart = () => {
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   const monday = new Date(d);
   monday.setDate(diff);
-  return toDateStr(monday);
+  const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
+  return toDateStr(monday < monthStart ? monthStart : monday);
 };
 
 export const getMonthStart = () => {
